@@ -245,7 +245,6 @@ They provide **data structures** that can grow and shrink in size, making data h
    - **Output:** `[2, 3, 5, 7, 8]`
 
 ---
-
 ### 2️⃣ **Set**
 - **No duplicates allowed**
 - Unordered or ordered depending on implementation
