@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Digital Art Gallery</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #9da7eb;
+      font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    }
+
+    .head {
+      font-size: 43px;
+      text-transform: uppercase;
+      text-align: center;
+      background-color: rgb(65, 110, 223);
+      padding: 20px;
+      margin-bottom: 30px;
+      color: white;
+    }
+
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 25px;
+      padding: 20px;
+      justify-items: center;
+    }
+
+    .img {
+      position: relative;
+      overflow: hidden;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      text-align: center;
+      background: white;
+      width: 100%;
+      max-width: 320px;
+      transition: transform 0.3s ease;
+    }
+
+    .img:hover {
+      transform: translateY(-5px);
+    }
+
+    .image-container {
+      width: 100%;
+      height: auto; /* uniform image area */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      background: #f0f0f0;
+    }
+
+    .img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover; /* ensures proper alignment & no distortion */
+      transition: transform 0.3s ease;
+    }
+
+    .img:hover img {
+      transform: scale(1.1);
+    }
+
+    .caption {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(0,0,0,0.75);
+      color: white;
+      padding: 15px;
+      transform: translateY(100%);
+      transition: transform 0.3s ease;
+    }
+
+    .img:hover .caption {
+      transform: translateY(0);
+    }
+
+    footer {
+      background-color: rgb(65, 110, 223);
+      color: white;
+      text-align: center;
+      padding: 20px;
+      margin-top: 30px;
+    }
+  </style>
+</head>
+<body>
+  <h1 class="head">My Vector Arts</h1>
+
+  <div class="gallery-grid">
+    <div class="img">
+      <div class="image-container">
+        <img src="/1 (15).jpg" alt="Art 1">
+      </div>
+      <div class="caption">
+        <h3>Abstract Harmony</h3>
+        <p>Artist: John Doe</p>
+        <p>Year: 2023</p>
+      </div>
+    </div>
+
+    <div class="img">
+      <div class="image-container">
+        <img src="/1 (2).png" alt="Art 2">
+      </div>
+      <div class="caption">
+        <h3>Digital Dreams</h3>
+        <p>Artist: Jane Smith</p>
+        <p>Year: 2022</p>
+      </div>
+    </div>
+
+    <div class="img">
+      <div class="image-container">
+        <img src="/revenge.susano.png" alt="Art 3">
+      </div>
+      <div class="caption">
+        <h3>Future Vision</h3>
+        <p>Artist: Mike Johnson</p>
+        <p>Year: 2023</p>
+      </div>
+    </div>
+
+    <div class="img">
+      <div class="image-container">
+        <img src="/sasuke.jpg" alt="Art 4">
+      </div>
+      <div class="caption">
+        <h3>Color Symphony</h3>
+        <p>Artist: Sarah Wilson</p>
+        <p>Year: 2021</p>
+      </div>
+    </div>
+
+    <div class="img">
+      <div class="image-container">
+        <img src="/pussy.png" alt="Art 5">
+      </div>
+      <div class="caption">
+        <h3>Digital Landscape</h3>
+        <p>Artist: Tom Brown</p>
+        <p>Year: 2023</p>
+      </div>
+    </div>
+
+    <div class="img">
+      <div class="image-container">
+        <img src="/street.gif" alt="Art 6">
+      </div>
+      <div class="caption">
+        <h3>Modern Expressions</h3>
+        <p>Artist: Lisa Anderson</p>
+        <p>Year: 2022</p>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <h2>About This Gallery</h2>
+    <p>Welcome to our Digital Vector Art Gallery, featuring contemporary digital artworks from talented artists around the world.</p>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spring Flowers School</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background-color: #f5f7fa;
+    }
+
+    header {
+      background-color: #4a90e2;
+      color: white;
+      padding: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    header img {
+      height: 50px;
+    }
+
+    nav {
+      background-color: #333;
+      display: flex;
+      justify-content: center;
+    }
+
+    nav a {
+      color: white;
+      padding: 14px 20px;
+      text-decoration: none;
+      text-align: center;
+    }
+
+    nav a:hover {
+      background-color: #575757;
+    }
+
+    section {
+      padding: 30px;
+      text-align: center;
+    }
+
+    .profile {
+      display: none;
+      background-color: white;
+      margin: 20px auto;
+      max-width: 400px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      padding: 20px;
+    }
+
+    .profile h3 {
+      color: #4a90e2;
+    }
+
+    button {
+      background-color: #4a90e2;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #357abd;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Spring Flowers School</h1>
+    <img src="https://i.pinimg.com/736x/49/95/6a/49956a034ec0bfeec2f921b26d7eefcd.jpg" alt="Spring Flowers School Logo" style="max-height: 100px;">
+  </header>
+
+  <nav>
+    <a href="#">Home</a>
+    <a href="#" onclick="showProfile()">Student Profile</a>
+    <a href="#">About</a>
+    <a href="#">Contact</a>
+  </nav>
+
+  <section id="welcome">
+    <h2>Welcome to Spring Flowers School 🌸</h2>
+    <p>We are glad to have you here! Click on <b>Student Profile</b> in the menu to view your details.</p>
+  </section>
+
+  <section class="profile" id="profile">
+    <h3>Student Profile</h3>
+    <p><b>Name:</b> Ayush Kumar</p>
+    <p><b>Class:</b> 10th</p>
+    <p><b>Roll No:</b> 25</p>
+    <p><b>Section:</b> A</p>
+    <p><b>Email:</b> ayush109.hitece2020@gmail.com</p>
+  </section>
+
+  <script>
+    function showProfile() {
+      document.getElementById('profile').style.display = 'block';
+      document.getElementById('welcome').style.display = 'none';
+    }
+  </script>
+
+</body>
+</html>

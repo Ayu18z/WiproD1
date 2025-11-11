@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Student Report Card</title>
+</head>
+<body>
+<script>
+    let students = [
+        { name: "Alice", marks: [45, 67, 78] },
+        { name: "Bob", marks: [45, "", 78] },
+        { name: 234, marks: [45, 67, 78] },
+        { name: "Charlie", marks: [90, 95, 92] },
+    ];
+
+    function isValidStudent(student) {
+        if (typeof student.name !== "string") {
+            console.warn("Invalid name entered: ", student.name);
+            return false;
+        }
+        for (let mark of student.marks) {
+            if (typeof mark !== "number" || isNaN(mark)) {
+                console.warn("Invalid mark entered for " + student.name + ": " + mark);
+                return false;
+            }
+        }
+        return true;
+    }
+
+    function calculateAverage(marks) {
+        if (marks.length === 0) return 0; // Handle empty marks
+        const total = marks.reduce((sum, m) => sum + m, 0);
+        return total / marks.length;
+    }
+
+    function getGrade(avg) {
+        if (avg >= 90) return "A";
+        else if (avg >= 75) return "B";
+        else if (avg >= 60) return "C";
+        else if (avg >= 40) return "D";
+        else return "F";
+    }
+
+    function calculateTotalScholarship(grade) {
+        switch (grade) {
+            case "A": return 1000;
+            case "B": return 500;
+            default: return 0;
+        }
+    }
+
+    function generateReport(students) {
+        console.log("Student Report Card:");
+        for (let student of students) {
+            if (!isValidStudent(student)) {
+                console.log(`Skipping invalid record: ${student.name}`);
+                continue;
+            }
+
+            const avg = calculateAverage(student.marks);
+            const grade = getGrade(avg);
+            const scholarship = calculateTotalScholarship(grade);
+
+            console.log(`Name: ${student.name}`);
+            console.log(`Marks: ${student.marks.join(", ")}`);
+            console.log(`Average: ${avg.toFixed(2)}`);
+            console.log(`Grade: ${grade}`);
+            if (scholarship > 0) {
+                console.log(`Scholarship Awarded: $${scholarship}`);
+            }
+            console.log("-----------");
+        }
+    }
+
+    generateReport(students);
+</script>
+</body>
+</html>
