@@ -50,6 +50,26 @@
 
     console.log("Total Salary spent on Employees using reduce" , totalSalOfEmp);
 
+
+    // <!--Activity : Create a Employee Performance Tracker by calculating Total No. of Years of all Employees , filter grade wise performance and increment the bonus by 30% grade wise   -->
+
+    const YearsOfEmp = [12, 7 , 14, 9];
+
+    //total no. of years for all emp, bu their sum
+
+    const totalYears = YearsOfEmp.reduce((sum, year) => sum + year , 0);
+    console.log("total years of exp = " , totalYears);
+
+    //filter emp with 10+ years exp
+
+     const HighexpEmp = YearsOfEmp.filter(year => year >= 10);
+        console.log("Employees with 10+ years exp :", HighexpEmp);
+
+        //increment bonus by 30% 
+     const bonusIncrement = HighexpEmp.map(year => year * 1.30);
+        console.log("Bonus incremented by 30% :", bonusIncrement);
+
+
     </script>
 </body>
 </html>
