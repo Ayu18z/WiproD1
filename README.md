@@ -282,4 +282,4 @@ They provide **data structures** that can grow and shrink in size, making data h
 - Priority Queue  
 - Deque *(Double-ended queue)*  
 
-**Hierarchy:**
+
