@@ -23,7 +23,6 @@ and here is the breakdown of each days learning
 **Start Date:** *24th October 2025*  
 **Purpose:** This repository contains my daily notes, practice codes, and summaries from Wipro-NGA Java training.
 ---
-
 ## 📅 Day 1 – Java Basics & Git Introduction
 
 ### 🔹 Topics Covered:
