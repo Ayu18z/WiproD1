@@ -17,6 +17,7 @@ The Wipro-NGA training includes hands-on learning and assignments in:
 
 ## 📅 Day by Day Structure  
 Each folder or package in this repository corresponds to a specific **day or topic** covered during training.  
+
 and here is the breakdown of each days learning
 # 🧠 Wipro-NGA Java Training — Daily Learning Summary  
 **Author:** Ayush Kumar  
