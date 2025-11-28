@@ -5,7 +5,6 @@ This repository is created to upload and maintain my **daily practice and learni
 
 ---
 
-
 ## 🧠 Training Focus Areas  
 The Wipro-NGA training includes hands-on learning and assignments in:  
 - Core Java (OOPs, Collections, Exception Handling, Multithreading)  
