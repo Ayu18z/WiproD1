@@ -3,6 +3,7 @@
 ## 📘 About this Repository  
 This repository is created to upload and maintain my **daily practice and learning progress** during the **Wipro-NGA Training Program**, which started on **24th October 2025**.
 
+
 ---
 
 ## 🧠 Training Focus Areas  
