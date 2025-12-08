@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Admin Dashboard</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<script>
+if (localStorage.getItem("role") !== "ADMIN") {
+    alert("Unauthorized Access");
+    window.location.href = "admin-login.html";
+}
+</script>
+
+<div class="container">
+    <h2 class="title">Welcome, Admin</h2>
+    <p>You are now logged in.</p>
+
+    <button class="btn" onclick="window.location.href='admin-menu.html'">Manage Menu</button>
+    <button class="btn" onclick="window.location.href='admin-orders.html'">View Orders</button>
+    <button class="btn" onclick="window.location.href='admin-revenue.html'">Monthly Revenue</button>
+
+    <button class="btn" onclick="logout()">Logout</button>
+</div>
+
+<script>
+function logout() {
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
+    alert("Logged out!");
+    window.location.href = "admin-login.html";
+}
+</script>
+
+</body>
+</html>

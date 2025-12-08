@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Registration</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+    <h2 class="title">Create Account</h2>
+
+    <label>Username</label>
+    <input id="username" class="input" type="text" required>
+
+    <label>Email</label>
+    <input id="email" class="input" type="email" required>
+
+    <label>Password</label>
+    <input id="password" class="input" type="password" required>
+
+    <div style="margin-top:10px;">
+        <button class="btn" onclick="registerUser()">Register</button>
+        <button class="back-btn" onclick="goBack()">Back</button>
+    </div>
+
+    <div id="err" style="color:#b00020;margin-top:8px;display:none;"></div>
+    <div style="margin-top:8px;">Already have an account? <a href="login.html">Login here</a></div>
+</div>
+<div class="footer">
+    © 2025 Pizza Ordering System — Fresh Hot Pizzas Everyday!
+</div>
+<script>
+function showError(msg){ const e=document.getElementById('err'); e.style.display='block'; e.textContent=msg; }
+
+function goBack(){ if(history.length>1) history.back(); else window.location.href='login.html'; }
+
+function registerUser(){
+    const data = {
+        username: document.getElementById("username").value.trim(),
+        email: document.getElementById("email").value.trim(),
+        password: document.getElementById("password").value
+    };
+    if (!data.username || !data.email || !data.password) { showError("Fill all fields"); return; }
+
+    fetch("http://localhost:8081/user/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+    })
+    .then(async r => {
+        if (!r.ok) {
+            const t = await r.text().catch(()=>r.statusText);
+            throw new Error(t || "Registration failed");
+        }
+        return r.json();
+    })
+    .then(result => {
+        alert("User created: " + (result.username || result.email || ""));
+        window.location.href = "login.html";
+    })
+    .catch(err => showError(err.message || "Registration failed"));
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Monthly Revenue - Admin</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<script>
+if (localStorage.getItem("role") !== "ADMIN") {
+    alert("Unauthorized Access");
+    window.location.href = "admin-login.html";
+}
+</script>
+
+<div class="container">
+    <h2 class="title">Monthly Revenue Report</h2>
+
+    <div class="input-row">
+        <input type="month" id="monthInput" class="input">
+        <button class="btn" onclick="fetchRevenue()">Get Revenue</button>
+    </div>
+
+    <table id="revenueTable" class="table" style="display:none;">
+        <thead>
+        <tr>
+            <th>Order ID</th>
+            <th>User</th>
+            <th>Date</th>
+            <th>Total Amount</th>
+        </tr>
+        </thead>
+        <tbody id="revenueBody"></tbody>
+    </table>
+
+    <div id="totalRevenueBox" class="total-box" style="display:none;">
+        Total Revenue: ₹<span id="totalRevenue">0</span>
+    </div>
+
+    <a href="admin-home.html" class="back-btn">Back</a>
+</div>
+
+<script>
+function fetchRevenue() {
+    const month = document.getElementById("monthInput").value;
+
+    if (!month) {
+        alert("Please select a month.");
+        return;
+    }
+
+    const url = `http://localhost:8084/order/revenue/monthly?month=${month}`;
+
+    fetch(url)
+        .then(res => res.json())
+        .then(data => renderRevenue(data))
+        .catch(err => {
+            alert("Error fetching revenue");
+            console.error(err);
+        });
+}
+
+function renderRevenue(data) {
+    const table = document.getElementById("revenueTable");
+    const tbody = document.getElementById("revenueBody");
+    const totalBox = document.getElementById("totalRevenueBox");
+    const totalSpan = document.getElementById("totalRevenue");
+
+    tbody.innerHTML = "";
+
+    if (!data.orders || data.orders.length === 0) {
+        alert("No orders found for this month.");
+        table.style.display = "none";
+        totalBox.style.display = "none";
+        return;
+    }
+
+    let total = 0;
+
+    data.orders.forEach(order => {
+        tbody.innerHTML += `
+            <tr>
+                <td>${order.id}</td>
+                <td>${order.userId}</td>
+                <td>${order.createdAt}</td>
+                <td>₹${order.totalAmount}</td>
+            </tr>
+        `;
+        total += order.totalAmount;
+    });
+
+    table.style.display = "table";
+    totalBox.style.display = "block";
+    totalSpan.textContent = total.toFixed(2);
+}
+</script>
+
+</body>
+</html>

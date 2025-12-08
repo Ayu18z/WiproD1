@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>My Orders</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<script>
+if (localStorage.getItem("role") !== "USER") {
+    alert("Unauthorized Access");
+    window.location.href = "login.html";
+}
+</script>
+
+<header class="header">
+    <img src="images/logo.png" class="logo">
+    <span class="store-name">Pizzeria</span>
+</header>
+
+
+<div class="container">
+  <h2 class="title">My Orders - Hello, <span id="usernameDisplay"></span></h2>
+
+  <div class="section" style="display:flex;gap:8px;">
+    <button class="btn" onclick="window.location.href='user-menu.html'">Back to Menu</button>
+    <button class="back-btn" onclick="logout()">Logout</button>
+  </div>
+
+  <hr>
+
+  <div id="ordersArea" class="section">Loading...</div>
+</div>
+<div class="footer">
+    © 2025 Pizza Ordering System — Fresh Hot Pizzas Everyday!
+</div>
+
+
+<script>
+const token = localStorage.getItem("token");
+if (!token) { alert("Please login"); window.location.href = 'login.html'; }
+const userId = localStorage.getItem("userId");
+document.getElementById("usernameDisplay").textContent = localStorage.getItem("username") || '';
+
+function logout(){ localStorage.clear(); history.replaceState(null,'',location.href); window.location.href='login.html'; }
+
+function loadOrders(){
+    fetch(`http://localhost:8084/order/user/${userId}`, {
+        headers: { "Authorization": "Bearer " + token }
+    })
+    .then(r => {
+        if (!r.ok) throw new Error("Failed to load orders");
+        return r.json();
+    })
+    .then(data => showOrders(data))
+    .catch(e => { document.getElementById('ordersArea').innerHTML = '<em>Error loading orders</em>'; });
+}
+
+function showOrders(orders){
+    if (!orders || orders.length === 0) {
+        document.getElementById('ordersArea').innerHTML = '<p>No orders yet.</p>';
+        return;
+    }
+    let html = `<table class="table"><tr><th>ID</th><th>Items</th><th>Total</th><th>Status</th><th>Time</th><th>Action</th></tr>`;
+    orders.forEach(o => {
+        html += `<tr>
+            <td>${o.id}</td>
+            <td>${(o.itemIds||[]).join(", ")}</td>
+            <td>₹ ${o.totalAmount}</td>
+            <td>${o.status}</td>
+            <td>${(o.createdAt||'').replace && (o.createdAt||'').replace("T"," ") || o.createdAt}</td>
+            <td>
+              ${o.status === 'PENDING' ? `<button class="btn" onclick="cancelOrder(${o.id})">Cancel</button>` : ''}
+              <button class="btn" onclick="viewBill(${o.id})">View Bill</button>
+            </td>
+        </tr>`;
+    });
+    html += "</table>";
+    document.getElementById('ordersArea').innerHTML = html;
+}
+
+function cancelOrder(id){
+    fetch(`http://localhost:8084/order/cancel/${id}`, {
+        method:'PUT',
+        headers: { "Authorization": "Bearer " + token }
+    })
+    .then(r => {
+        if (!r.ok) throw new Error("Cancel failed");
+        return r.json();
+    })
+    .then(()=> { alert('Order canceled'); loadOrders(); })
+    .catch(e=> alert('Cancel failed: ' + (e.message || '')) );
+}
+
+function viewBill(orderId){
+    window.location.href = `bill.html?orderId=${orderId}`;
+}
+
+loadOrders();
+
+
+
+</script>
+</body>
+</html>

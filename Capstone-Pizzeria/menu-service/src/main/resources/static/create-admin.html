@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Admin</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+    <h2>Create Admin Account</h2>
+
+    <label>Username</label>
+    <input id="username" type="text" required>
+
+    <label>Password</label>
+    <input id="password" type="password" required>
+
+    <button onclick="createAdmin()">Create Admin</button>
+
+    <p>Already have an account? 
+        <a href="admin-login.html">Login here</a>
+    </p>
+</div>
+
+<script>
+function createAdmin() {
+    const data = {
+        username: document.getElementById("username").value,
+        password: document.getElementById("password").value
+    };
+
+    fetch("http://localhost:8082/admin/createadmin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+    })
+    .then(res => {
+        if (!res.ok) throw new Error("Admin creation failed");
+        return res.json();
+    })
+    .then(result => {
+        alert("Admin created: " + result.username);
+        window.location.href = "admin-login.html";
+    })
+    .catch(err => alert(err.message));
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>User Menu</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+
+<script>
+if (localStorage.getItem("role") !== "USER") {
+    alert("Unauthorized Access");
+    window.location.href = "login.html";
+}
+</script>
+
+<header class="header">
+    <img src="images/logo.png" class="logo">
+    <span class="store-name">Pizzeria</span>
+</header>
+
+
+<div style="max-width:1100px;margin:20px auto;padding:0 16px;">
+  
+  <div style="display:flex;justify-content:space-between;align-items:center">
+    <div>
+      <h3 class="title">Welcome, <span id="usernameDisplay"></span></h3>
+      <div class="small" style="color:#666;font-size:13px">Shop your favorite pizzas!</div>
+    </div>
+    <div>
+      <button class="btn" onclick="window.location.href='my-orders.html'">My Orders</button>
+      <button class="back-btn" onclick="logout()">Logout</button>
+    </div>
+  </div>
+
+  <hr>
+
+  <h3>Pizza Menu</h3>
+  <div id="menuList" style="display:grid;grid-template-columns:repeat(auto-fill, minmax(200px,1fr));gap:12px;margin-top:12px;">
+    Loading...
+  </div>
+
+  <hr>
+
+  <h3>Your Cart</h3>
+  <div id="cartEmpty">Cart is empty</div>
+
+  <table id="cartTable" class="table" style="display:none;width:60%;margin-top:12px">
+    <thead>
+      <tr>
+        <th>Item</th>
+        <th>Qty</th>
+        <th>Price</th>
+        <th>Remove</th>
+      </tr>
+    </thead>
+    <tbody id="cartBody"></tbody>
+  </table>
+
+  <h3 style="margin-top:12px">Total: ₹ <span id="totalPrice">0</span></h3>
+
+  <div style="margin-top:12px;display:flex;gap:8px;">
+    <button class="btn" onclick="goToCheckout()">Checkout</button>
+    <button class="back-btn" onclick="goBack()">Back</button>
+  </div>
+
+</div>
+<div class="footer">
+    © 2025 Pizza Ordering System — Fresh Hot Pizzas Everyday!
+</div>
+
+<script>
+
+
+const token = localStorage.getItem("token");
+if (!token) {
+    alert("Please login first");
+    window.location.href = "login.html";
+}
+
+const userId = Number(localStorage.getItem("userId"));
+document.getElementById("usernameDisplay").textContent =
+    localStorage.getItem("username") || "User";
+
+let cart = {};      
+let menuCache = [];
+
+
+
+function loadMenu() {
+    fetch("http://localhost:8083/menu/all")
+        .then(r => r.json())
+        .then(items => {
+            menuCache = items;
+            renderMenu(items);
+        })
+        .catch(() => {
+            document.getElementById("menuList").innerHTML =
+              "<em>Error loading menu</em>";
+        });
+}
+
+function renderMenu(items) {
+    const div = document.getElementById("menuList");
+    div.innerHTML = "";
+
+    items.forEach(item => {
+        div.insertAdjacentHTML("beforeend", `
+            <div class="card">
+                <h4>${item.name}</h4>
+                <div style="color:#333;margin-top:6px;">₹ ${item.price}</div>
+                <div class="small" style="color:#666">${item.description || ""}</div>
+                <button class="btn" style="margin-top:8px"
+                        onclick="addToCart(${item.id})">Add to Cart</button>
+            </div>
+        `);
+    });
+}
+
+
+
+function addToCart(id) {
+    const item = menuCache.find(m => m.id === id);
+    if (!item) return;
+
+    if (!cart[id]) {
+        cart[id] = {
+            id: item.id,
+            name: item.name,
+            price: item.price,
+            qty: 0
+        };
+    }
+
+    cart[id].qty++;
+    updateCart();
+}
+
+function removeItem(id) {
+    delete cart[id];
+    updateCart();
+}
+
+function updateCart() {
+    const body = document.getElementById("cartBody");
+    const items = Object.values(cart);
+
+    body.innerHTML = "";
+
+    if (items.length === 0) {
+        document.getElementById("cartEmpty").style.display = "block";
+        document.getElementById("cartTable").style.display = "none";
+        document.getElementById("totalPrice").textContent = "0";
+        return;
+    }
+
+    let total = 0;
+
+    items.forEach(it => {
+        total += it.price * it.qty;
+
+        body.insertAdjacentHTML("beforeend", `
+            <tr>
+                <td>${it.name}</td>
+                <td>${it.qty}</td>
+                <td>₹ ${it.price}</td>
+                <td><button class="btn back-btn" onclick="removeItem(${it.id})">Remove</button></td>
+            </tr>
+        `);
+    });
+
+    document.getElementById("totalPrice").textContent = total;
+    document.getElementById("cartEmpty").style.display = "none";
+    document.getElementById("cartTable").style.display = "table";
+}
+
+function goToCheckout() {
+    const items = Object.values(cart);
+
+    if (items.length === 0) {
+        alert("Your cart is empty!");
+        return;
+    }
+
+    const total = Number(document.getElementById("totalPrice").textContent);
+
+    localStorage.setItem("checkoutItems", JSON.stringify(items));
+    localStorage.setItem("checkoutTotal", total);
+
+    window.location.href = "checkout.html";
+}
+
+
+function logout() {
+    localStorage.clear();
+    window.location.href = "login.html";
+}
+
+function goBack() {
+    if (history.length > 1) history.back();
+    else window.location.href = "user-home.html";
+}
+
+window.onload = loadMenu;
+
+</script>
+</body>
+</html>

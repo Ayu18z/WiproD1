@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Login</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+    <h2 class="title">Admin Login</h2>
+
+    <label>Username</label>
+    <input id="username" class="input" type="text" required>
+
+    <label>Password</label>
+    <input id="password" class="input" type="password" required>
+
+    <button class="btn" onclick="adminLogin()">Login</button>
+
+    <br><br>
+
+    <button class="btn" onclick="registerAdmin()">Register Admin</button>
+</div>
+
+<script>
+function registerAdmin() {
+    const data = {
+        username: document.getElementById('username').value,
+        password: document.getElementById('password').value
+    };
+
+    fetch("http://localhost:8082/admin/createadmin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+    })
+    .then(res => res.json())
+    .then(result => {
+        alert("Admin registered successfully!");
+    })
+    .catch(() => alert("Registration failed"));
+}
+
+function adminLogin() {
+    const data = {
+        username: document.getElementById('username').value,
+        password: document.getElementById('password').value
+    };
+
+    fetch("http://localhost:8082/admin/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+    })
+    .then(res => res.json())
+    .then(result => {
+        localStorage.setItem("token", result.token);
+        localStorage.setItem("adminName", result.username);
+        localStorage.setItem("adminId", result.adminId);
+        localStorage.setItem("role", result.role);  
+
+        alert("Login successful!");
+        window.location.href = "admin-home.html";
+    })
+    .catch(() => alert("Invalid Credentials"));
+}
+</script>
+
+</body>
+</html>

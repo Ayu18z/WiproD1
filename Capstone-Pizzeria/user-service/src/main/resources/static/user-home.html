@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>User Home</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<script>
+if (localStorage.getItem("role") !== "USER") {
+    alert("Unauthorized Access");
+    window.location.href = "login.html";
+}
+</script>
+
+<header class="header">
+    <div class="header-left">
+        <img src="images/logo.png" class="logo">
+        <span class="store-name">Pizzeria</span>
+    </div>
+
+   
+</header>
+
+
+<div class="container">
+
+    <h2>Welcome, <span id="usernameDisplay"></span></h2>
+
+   
+
+    <div class="section" style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">
+        <button class="btn" onclick="goToMenu()">View Menu</button>
+        <button class="btn" onclick="goToOrders()">My Orders</button>
+        <button class="back-btn" onclick="logout()">Logout</button>
+    </div>
+
+</div>
+</div>
+ <!-- carousel -->
+    <div class="carousel">
+        <img src="images/pizza (1).jpg" class="active">
+        <img src="images/pizza (2).jpg">
+        <img src="images/pizza (3).jpg">
+        <img src="images/pizza (4).jpg">
+          <img src="images/pizza (5).jpg">
+        <img src="images/pizza (6).jpg">
+        <img src="images/coke.jpg">
+    </div>
+<div class="footer">
+    © 2025 Pizza Ordering System — Fresh Hot Pizzas Everyday!
+</div>
+<script>
+document.getElementById("usernameDisplay").textContent =
+    localStorage.getItem("username") || "User";
+
+function goToMenu(){ window.location.href="user-menu.html"; }
+function goToOrders(){ window.location.href="my-orders.html"; }
+
+function logout(){
+    localStorage.clear();
+    alert("Logged out");
+    window.location.href="login.html";
+}
+
+/* carousel script */
+let index = 0;
+const slides = document.querySelectorAll(".carousel img");
+
+function showSlide() {
+    slides.forEach(s => s.classList.remove("active"));
+    slides[index].classList.add("active");
+    index = (index + 1) % slides.length;
+}
+
+setInterval(showSlide, 2500);
+</script>
+
+</body>
+</html>

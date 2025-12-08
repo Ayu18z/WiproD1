@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Manage Menu</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<script>
+if (localStorage.getItem("role") !== "ADMIN") {
+    alert("Unauthorized Access");
+    window.location.href = "admin-login.html";
+}
+</script>
+
+<div class="container">
+
+    <h2 class="title">Manage Menu Items</h2>
+    <hr>
+
+    <div class="section">
+        <button class="btn" onclick="window.location.href='admin-home.html'">◀ Back</button>
+        <button class="btn" onclick="showForm()">Add New Item</button>
+        <button class="btn" onclick="loadMenu()">View All Items</button>
+    </div>
+
+    <div id="formSection" class="section" style="display:none;">
+        <h3 id="formTitle">Add Menu Item</h3>
+
+        <input type="hidden" id="itemId">
+
+        <label>Name:</label>
+        <input id="name" class="input" type="text">
+
+        <label>Category:</label>
+        <select id="category" class="input">
+            <option value="pizza">Pizza</option>
+        </select>
+
+        <label>Price:</label>
+        <input id="price" class="input" type="number">
+
+        <label>Description:</label>
+        <input id="description" class="input" type="text">
+
+        <button class="btn" onclick="saveItem()">Save</button>
+        <button class="btn" onclick="hideForm()">Cancel</button>
+    </div>
+
+    <div class="section">
+        <input id="searchBox" class="input" type="text" placeholder="Search by name">
+        <button class="btn" onclick="searchByName()">Search</button>
+
+        <select id="categoryFilter" class="input" onchange="filterByCategory()">
+            <option value="">Filter by Category</option>
+            <option value="pizza">Pizza</option>
+        </select>
+
+        <input id="priceFilter" class="input" type="number" placeholder="Max Price">
+        <button class="btn" onclick="filterByPrice()">Filter Price</button>
+    </div>
+
+    <div id="menuTable" class="section"></div>
+
+</div>
+
+<script>
+function showForm(){ document.getElementById("formSection").style.display="block"; }
+function hideForm(){ document.getElementById("formSection").style.display="none"; }
+
+function saveItem() {
+    const id = document.getElementById("itemId").value;
+
+    const item = {
+        name: document.getElementById("name").value,
+        category: "pizza",
+        price: document.getElementById("price").value,
+        description: document.getElementById("description").value
+    };
+
+    const url = id
+        ? `http://localhost:8083/menu/update/${id}`
+        : `http://localhost:8083/menu/add`;
+
+    fetch(url, {
+        method: id ? "PUT" : "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + localStorage.getItem("token")
+        },
+        body: JSON.stringify(item)
+    })
+    .then(() => {
+        alert(id ? "Item Updated" : "Item Added");
+        hideForm();
+        loadMenu();
+    });
+}
+
+function loadMenu() {
+    fetch("http://localhost:8083/menu/all")
+        .then(res => res.json())
+        .then(data => buildTable(data));
+}
+
+function buildTable(data) {
+    let html = `
+        <table class="table">
+            <tr>
+                <th>ID</th><th>Name</th><th>Price</th><th>Description</th><th>Actions</th>
+            </tr>
+    `;
+
+    data.forEach(item => {
+        html += `
+            <tr>
+                <td>${item.id}</td>
+                <td>${item.name}</td>
+                <td>${item.price}</td>
+                <td>${item.description}</td>
+                <td>
+                    <button class="btn" onclick="editItem(${item.id}, '${item.name}', ${item.price}, '${item.description}')">Edit</button>
+                    <button class="btn" onclick="deleteItem(${item.id})">Delete</button>
+                </td>
+            </tr>
+        `;
+    });
+
+    html += "</table>";
+    document.getElementById("menuTable").innerHTML = html;
+}
+function searchByName() {
+ const name = document.getElementById("searchBox").value.trim();
+ if (name === "") {
+     loadMenu();
+     return;
+ }
+
+ fetch(`http://localhost:8083/menu/search/${name}`)
+     .then(res => res.json())
+     .then(data => buildTable(data))
+     .catch(err => console.error("Search failed:", err));
+}
+
+function filterByCategory() {
+ const cat = document.getElementById("categoryFilter").value;
+
+ if (cat === "") {
+     loadMenu();
+     return;
+ }
+
+ fetch(`http://localhost:8083/menu/category/${cat}`)
+     .then(res => res.json())
+     .then(data => buildTable(data))
+     .catch(err => console.error("Category filter failed:", err));
+}
+
+function filterByPrice() {
+ const maxPrice = document.getElementById("priceFilter").value;
+
+ if (maxPrice === "" || maxPrice <= 0) {
+     loadMenu();
+     return;
+ }
+
+ fetch(`http://localhost:8083/menu/price/${maxPrice}`)
+     .then(res => res.json())
+     .then(data => buildTable(data))
+     .catch(err => console.error("Price filter failed:", err));
+}
+
+function editItem(id, name, price, description) {
+    document.getElementById("itemId").value = id;
+    document.getElementById("name").value = name;
+    document.getElementById("price").value = price;
+    document.getElementById("description").value = description;
+    document.getElementById("formTitle").innerText = "Edit Menu Item";
+    showForm();
+}
+
+
+
+function deleteItem(id) {
+    if (!confirm("Delete this item?")) return;
+    fetch(`http://localhost:8083/menu/delete/${id}`, {
+        method: "DELETE",
+        headers: { "Authorization": "Bearer " + localStorage.getItem("token") }
+    })
+    .then(() => {
+        alert("Item deleted");
+        loadMenu();
+    });
+}
+
+window.onload = loadMenu;
+</script>
+
+</body>
+</html>

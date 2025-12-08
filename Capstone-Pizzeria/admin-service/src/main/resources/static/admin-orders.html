@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Admin - Manage Orders</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<script>
+if (localStorage.getItem("role") !== "ADMIN") {
+    alert("Unauthorized Access");
+    window.location.href = "admin-login.html";
+}
+</script>
+
+<h2 class="title">Admin - Order Management</h2>
+
+<button class="btn" onclick="window.location.href='admin-home.html'">Home</button>
+<hr>
+
+<div id="ordersArea" class="section">Loading...</div>
+
+<script>
+function loadOrders() {
+    fetch("http://localhost:8084/order/all", {
+        headers: { "Authorization": "Bearer " + localStorage.getItem("token") }
+    })
+    .then(res => res.json())
+    .then(data => showOrders(data));
+}
+
+function showOrders(orders) {
+    if (!orders.length) {
+        document.getElementById("ordersArea").innerHTML = "No orders found.";
+        return;
+    }
+
+    let html = `
+        <table class="table">
+            <tr>
+                <th>ID</th><th>User</th><th>Items</th><th>Total</th><th>Status</th>
+                <th>Ordered At</th><th>Actions</th>
+            </tr>
+    `;
+
+    orders.forEach(o => {
+        html += `
+            <tr>
+                <td>${o.id}</td>
+                <td>${o.userId}</td>
+                <td>${o.itemIds.join(", ")}</td>
+                <td>${o.totalAmount}</td>
+                <td>${o.status}</td>
+                <td>${o.createdAt.replace("T"," ")}</td>
+
+                <td>
+                    ${o.status === "PENDING" ? `
+                        <button class="btn" onclick="acceptOrder(${o.id})">Accept</button>
+                        <button class="btn" onclick="rejectOrder(${o.id})">Reject</button>
+                    ` : ""}
+
+                    ${o.status === "ACCEPTED" ? `
+                        <button class="btn" onclick="completeOrder(${o.id})">Complete</button>
+                    ` : ""}
+                </td>
+            </tr>
+        `;
+    });
+
+    html += "</table>";
+    document.getElementById("ordersArea").innerHTML = html;
+}
+
+function acceptOrder(id) {
+    fetch(`http://localhost:8084/order/accept/${id}`, {
+        method: "PUT",
+        headers: { "Authorization": "Bearer " + localStorage.getItem("token") }
+    })
+    .then(() => { alert("Order accepted"); loadOrders(); });
+}
+
+function rejectOrder(id) {
+    fetch(`http://localhost:8084/order/reject/${id}`, {
+        method: "PUT",
+        headers: { "Authorization": "Bearer " + localStorage.getItem("token") }
+    })
+    .then(() => { alert("Order rejected"); loadOrders(); });
+}
+
+function completeOrder(id) {
+    fetch(`http://localhost:8084/order/complete/${id}`, {
+        method: "PUT",
+        headers: { "Authorization": "Bearer " + localStorage.getItem("token") }
+    })
+    .then(() => { alert("Order completed"); loadOrders(); });
+}
+
+loadOrders();
+</script>
+
+</body>
+</html>

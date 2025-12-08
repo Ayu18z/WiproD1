@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Order Bill</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<script>
+if (localStorage.getItem("role") !== "USER") {
+    alert("Unauthorized Access");
+    window.location.href = "login.html";
+}
+</script>
+
+<div class="container box" style="padding:20px">
+  <h2 class="title">Order Invoice</h2>
+  <p><strong>Order ID:</strong> <span id="orderIdSpan"></span></p>
+  <p><strong>User ID:</strong> <span id="userIdSpan"></span></p>
+  <p><strong>Status:</strong> <span id="statusSpan"></span></p>
+  <p><strong>Date:</strong> <span id="dateSpan"></span></p>
+
+  <h3>Items</h3>
+  <table class="table">
+    <thead><tr><th>Name</th><th>Price (₹)</th><th>Qty</th><th>Total (₹)</th></tr></thead>
+    <tbody id="itemsTable"></tbody>
+  </table>
+
+  <h3 class="section">Grand Total: ₹ <span id="grandTotal"></span></h3>
+
+  <div class="section" style="margin-top:12px;">
+    <button class="back-btn" onclick="goBack()">Back</button>
+    <button class="btn" onclick="window.print()">Print Bill</button>
+  </div>
+</div>
+
+<script>
+const token = localStorage.getItem("token");
+if (!token) { alert("Please login"); window.location.href = 'login.html'; }
+
+const params = new URLSearchParams(window.location.search);
+const orderId = params.get('orderId');
+if (!orderId) { alert('No orderId'); window.location.href='my-orders.html'; }
+
+document.getElementById('orderIdSpan').textContent = orderId;
+
+function goBack(){ window.location.href = 'my-orders.html'; }
+
+fetch(`http://localhost:8084/order/bill/${orderId}`, {
+    headers: { "Authorization": "Bearer " + token }
+})
+.then(async r => {
+    if (!r.ok) {
+        const txt = await r.text().catch(()=>r.statusText);
+        throw new Error(txt || 'Failed to get bill');
+    }
+    return r.json();
+})
+.then(bill => {
+    document.getElementById('userIdSpan').textContent = bill.userId;
+    document.getElementById('statusSpan').textContent = bill.status;
+    document.getElementById('dateSpan').textContent = (bill.createdAt||'').replace && (bill.createdAt||'').replace("T"," ") || bill.createdAt;
+
+    const tb = document.getElementById('itemsTable');
+    tb.innerHTML = '';
+    (bill.items||[]).forEach(it => {
+        const qty = it.qty !== undefined ? it.qty : 1;
+        const price = it.price !== undefined ? it.price : 0;
+        const line = it.lineTotal !== undefined ? it.lineTotal : (price * qty);
+        tb.insertAdjacentHTML('beforeend', `
+            <tr>
+                <td>${it.name}</td>
+                <td>${price}</td>
+                <td>${qty}</td>
+                <td>${line}</td>
+            </tr>
+        `);
+    });
+
+    const total = bill.total !== undefined ? bill.total : ((bill.items||[]).reduce((acc,it)=> acc + ((it.lineTotal !== undefined) ? it.lineTotal : (it.price||0)*(it.qty||1)) , 0));
+    document.getElementById('grandTotal').textContent = total;
+})
+.catch(err => {
+    alert('Failed to load bill: ' + err.message);
+    window.location.href = 'my-orders.html';
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Checkout</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<script>
+if (localStorage.getItem("role") !== "USER") {
+    alert("Unauthorized!");
+    window.location.href = "login.html";
+}
+</script>
+
+<div class="container">
+
+    <h2 class="title">Checkout</h2>
+    <p class="section">Review your order before placing it.</p>
+
+    <div id="itemsBox" class="section"></div>
+
+    <h3>Total Amount: ₹ <span id="totalAmount"></span></h3>
+
+    <div class="section">
+        <h3>Choose Payment Method</h3>
+
+        <label><input type="radio" name="payment" value="UPI" checked> UPI</label><br>
+        <label><input type="radio" name="payment" value="CARD"> Card Payment</label><br>
+        <label><input type="radio" name="payment" value="COD"> Cash on Delivery</label>
+    </div>
+
+    <button class="btn" onclick="placeOrder()">Place Order</button>
+    <button class="back-btn" onclick="window.location.href='user-menu.html'">Back</button>
+
+</div>
+<div class="footer">
+    © 2025 Pizza Ordering System — Fresh Hot Pizzas Everyday!
+</div>
+
+<script>
+
+const selectedItems = JSON.parse(localStorage.getItem("checkoutItems") || "[]");
+const totalAmount = Number(localStorage.getItem("checkoutTotal") || 0);
+
+const userId = Number(localStorage.getItem("userId"));
+const token = localStorage.getItem("token");
+
+document.getElementById("totalAmount").textContent = totalAmount;
+function loadItems() {
+    if (selectedItems.length === 0) {
+        document.getElementById("itemsBox").innerHTML =
+            "<b>Your cart is empty or checkout data missing.</b>";
+        return;
+    }
+
+    let html = "<h3>Selected Items:</h3><ul>";
+
+    selectedItems.forEach(item => {
+        html += `<li>${item.name} × ${item.qty} (₹${item.price})</li>`;
+    });
+
+    html += "</ul>";
+
+    document.getElementById("itemsBox").innerHTML = html;
+}
+
+loadItems();
+
+
+function placeOrder() {
+
+    const paymentMethod = document.querySelector("input[name='payment']:checked").value;
+
+    const itemIds = [];
+    selectedItems.forEach(it => {
+        for (let i = 0; i < it.qty; i++) itemIds.push(it.id);
+    });
+
+    const payload = {
+        userId: userId,
+        itemIds: itemIds,
+        totalAmount: totalAmount,
+        payment: paymentMethod
+    };
+
+    fetch("http://localhost:8084/order/place", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token
+        },
+        body: JSON.stringify(payload)
+    })
+    .then(async r => {
+        if (!r.ok) {
+            let txt = await r.text();
+            throw new Error(txt);
+        }
+        return r.json();
+    })
+    .then(order => {
+        alert("Order placed successfully! Order ID: " + order.id);
+
+        localStorage.removeItem("checkoutItems");
+        localStorage.removeItem("checkoutTotal");
+
+        window.location.href = "my-orders.html";
+    })
+    .catch(err => {
+        console.error(err);
+        alert("Order failed: " + err.message);
+    });
+}
+</script>
+
+</body>
+</html>
