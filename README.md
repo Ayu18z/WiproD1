@@ -4,7 +4,7 @@ This project is a microservice-based pizza ordering system.
 It consists of the following services running locally:
 
 | Microservice       | Port  |
-|-------------------|-------|
+|--------------------|-------|
 | Admin Service      | 8082  |
 | Eureka Server      | 8761  |
 | Menu Service       | 8083  |
